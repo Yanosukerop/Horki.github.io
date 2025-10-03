@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback Diapo</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom right, #e0f7fa, #e1bee7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+  .container {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 500px;
+  }
+  .slide {
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 15px;
+  }
+  .slide img {
+    width: 100%;
+    display: block;
+  }
+  h2 { margin: 0 0 10px 0; font-size: 1.2em; }
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .buttons button {
+    flex: 1 1 48%;
+    padding: 12px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+  }
+  .yes { background-color: #4caf50; }
+  .no { background-color: #f44336; }
+  .results { margin-top: 15px; }
+  .bar {
+    height: 20px;
+    border-radius: 10px;
+    background-color: #ddd;
+    margin-bottom: 5px;
+    position: relative;
+  }
+  .fill {
+    height: 100%;
+    border-radius: 10px;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    line-height: 20px;
+  }
+  textarea {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    font-size: 14px;
+  }
+  button.send-comment {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px 0;
+    border: none;
+    border-radius: 8px;
+    background-color: #2196f3;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="slide">
+    <img id="slide-img" src="mon_image.jpg" alt="Ma diapo">
+  </div>
+  <h2>Ça vous a plu ?</h2>
+  <div class="buttons">
+    <button class="yes" onclick="vote(true)">Oui</button>
+    <button class="no" onclick="vote(false)">Non</button>
+  </div>
+  <textarea id="comment" placeholder="Laissez un commentaire (optionnel)"></textarea>
+  <button class="send-comment" onclick="sendComment()">Envoyer commentaire</button>
+  <div class="results">
+    <div class="bar"><div id="yes-bar" class="fill" style="background-color:#4caf50; width:0%">0%</div></div>
+    <div class="bar"><div id="no-bar" class="fill" style="background-color:#f44336; width:0%">0%</div></div>
+  </div>
+</div>
+<script>
+let votes = { yes: 0, no: 0 };
+
+function vote(isYes) {
+  if(sessionStorage.getItem('hasVoted')) return alert('Vous avez déjà voté !');
+  if(isYes) votes.yes++; else votes.no++;
+  sessionStorage.setItem('hasVoted', '1');
+  updateResults();
+  alert('Merci pour votre vote !');
+}
+
+function sendComment() {
+  const comment = document.getElementById('comment').value.trim();
+  if(!comment) return alert('Le commentaire est vide.');
+  let comments = JSON.parse(localStorage.getItem('comments') || '[]');
+  comments.push(comment);
+  localStorage.setItem('comments', JSON.stringify(comments));
+  document.getElementById('comment').value = '';
+  alert('Merci pour votre commentaire !');
+}
+
+function updateResults() {
+  const total = votes.yes + votes.no;
+  const yesPct = total ? Math.round((votes.yes/total)*100) : 0;
+  const noPct = total ? Math.round((votes.no/total)*100) : 0;
+  document.getElementById('yes-bar').style.width = yesPct+'%';
+  document.getElementById('yes-bar').textContent = yesPct+'%';
+  document.getElementById('no-bar').style.width = noPct+'%';
+  document.getElementById('no-bar').textContent = noPct+'%';
+}
+</script>
+</body>
+</html>
